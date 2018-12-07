@@ -1,0 +1,11 @@
+setup-info: http://localhost:3000/stack-setup-mirror.yaml
+
+urls:
+  latest-snapshot: http://localhost:3000/snapshots.json
+  lts-build-plans: http://localhost:3000/build-plans/lts-haskell/
+  nightly-build-plans: http://localhost:3000/build-plans/stackage-nightly/
+
+package-indices:
+- name: Hackage
+  download-prefix: http://localhost:3000/packages/
+  http: http://localhost:3000/01-index.tar.gz
