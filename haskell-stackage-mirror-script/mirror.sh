@@ -55,13 +55,9 @@ echo "======= mirroring Stackage... ==========================================="
 echo "======= downloading stack setup YAML ===================================="
 $WGET -N -P "$MIRROR_DIR" "$STACK_SETUP" 2>&1 \
 || (echo "error downloading stack setup YAML" && exit 1)
-MIRROR_URL_ESC=\
-$(echo "$MIRROR_URL" | sed -e 's/[\/&]/\\&/g')
+MIRROR_URL_ESC=$(echo "$MIRROR_URL" | sed -e 's/[\/&]/\\&/g')
 # replace part of url except it's basename in all urls from YAML
-sed "s/\\( \\+url\\: *\\)\"http.*\\/\\([^?]*\\).*\"\$`\
-    `/\\1$MIRROR_URL_ESC\\/stack\\/\\2/" \
-    "$MIRROR_DIR/stack-setup-2.yaml" \
-    > "$MIRROR_DIR/stack-setup-mirror.yaml"
+sed "s@\( url\: *\)\"http.*\/\([^?]*\).*\"\$@\1$MIRROR_URL_ESC\/stack\/\2@" "$MIRROR_DIR/stack-setup-2.yaml" > "$MIRROR_DIR/stack-setup-mirror.yaml"
 echo
 
 
@@ -71,25 +67,22 @@ REGEX_SHA1='sha1\: *\([[:xdigit:]]*\)'
 : > download-stack-urls
 : > download-stack-checksums
 # get line numbers of url records in YAML and find nearby sha1
-grep -E -n "url:( *)\"(.*)\"" "$YAML" \
+grep -E -n "url:( *)\"(.*download.*)\"" $YAML  | grep -v "#" \
   | cut -d':' -f1 \
   | while read -r line_number; do
-        url=$(sed -n "${line_number}s"/' \+url: *\"\(.*\)\"/\1/p' "$YAML")
-        whitespace=`\
-          `$(sed -n "${line_number}s"/'\( \+\)url\: *\".*\"/\1/p' "$YAML")
+        url=$(sed -n "${line_number}s@ *url: *\"\(.*\)\"@\1@p" $YAML)
+        whitespace=$(sed -n "${line_number}s@\( *\)url\: *\".*\"@\1@p" $YAML)
         sha1=""
-
         # trying to find sha1 below
         line_below=$((line_number + 1))
         while test -z $sha1; do
-            if test -z `\
-               `"$(sed -n "${line_below}s/\\(${whitespace}\\).*/\\1/p" "$YAML")"
+            if test -z "$(sed -n "${line_below}s/\\(${whitespace}\\).*/\\1/p" "$YAML")"
             then
                 break
             else
-                sha1=$(sed -n "${line_below}s/${whitespace}$REGEX_SHA1/\\1/p" \
-                           "$YAML")
+                sha1=$(sed -n "${line_below}s/${whitespace}$REGEX_SHA1/\\1/p" "$YAML")
             fi
+            echo "$line_below"
             ((++line_below))
         done
 
