@@ -1,0 +1,64 @@
+name:                offline-server
+version:             0.1.0.0
+github:              "smunix/offline-server"
+license:             BSD3
+author:              "Providence Salumu"
+maintainer:          "Providence.Salumu@smunix.com"
+copyright:           "BSD"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Compiler
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/smunix/offline-server#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+
+executables:
+  offline-server-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - base
+    - network
+    - conduit
+    - transformers
+    - resourcet
+    - conduit-extra
+    - connection
+    - http-conduit
+    - directory
+    - bytestring
+    - extra
+    - filepath
+    - wai
+    - warp
+    - http-types
+    - offline-server
+    default-extensions:
+    - OverloadedStrings
+tests:
+  offline-server-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - offline-server
