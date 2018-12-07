@@ -15,7 +15,4 @@ fi
 MIRROR_URL_ESC=\
 $(echo "$MIRROR_URL" | sed -e 's/[\/&]/\\&/g')
 
-sed "s/\\( \\+url\\: *\\)\"http.*\\/\\([^?]*\\).*\"\$`\
-    `/\\1$MIRROR_URL_ESC\\/stack\\/\\2/" \
-    "$ORIG_SETUP_YAML" \
-    > "stack-setup-mirror.yaml"
+sed "s@\( url\: *\)\"http.*\/\([^?]*\).*\"\$@\1$MIRROR_URL_ESC\/stack\/\2@" "$ORIG_SETUP_YAML" > "stack-setup-mirror.yaml"
